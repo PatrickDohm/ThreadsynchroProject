@@ -1,5 +1,6 @@
-threadsynchro: threadsynchro.cpp buffer.cpp
-	g++ -o threadsynchro threadsynchro.cpp buffer.cpp -lpthread
+threadsynchro: threadsynchro.o buffer.o
+	g++ threadsynchro.cpp buffer.cpp -lpthread -o threadsynchro
+
 
 clean:
 	rm -f threadsynchro *~
