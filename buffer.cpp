@@ -24,14 +24,15 @@ int insert_items(buffer_item item)
 {
     //insert item into buffer
     sem_wait(&empty);
-     //we need to lock this section
+    //we need to lock this section
+    pthread_mutex_lock(&mutex);
     if (buffer[in] != 0)
     { //0 means empty
-       
+
         return -1;
     }
     buffer[in] = item;
-    pthread_mutex_lock(&mutex);
+
     in = (in + 1) % BUFFER_SIZE;
     pthread_mutex_unlock(&mutex);
     sem_post(&full);
@@ -43,14 +44,15 @@ int remove_items(buffer_item *item)
 {
     sem_wait(&full);
     //we need to lock this section
+    pthread_mutex_lock(&mutex);
     if (buffer[out] == 0)
     {
-      
+
         return -1;
     }
     *item = buffer[out];
-    buffer[out]=0;
-    pthread_mutex_lock(&mutex); 
+    buffer[out] = 0;
+
     out = (out + 1) % BUFFER_SIZE;
     pthread_mutex_unlock(&mutex);
     sem_post(&empty);

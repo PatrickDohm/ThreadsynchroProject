@@ -66,7 +66,7 @@ void *producer(void *param)
         /* sleep for a random period of time*/
         sleep(rand() % 5);
         //generate a random number
-        item = rand();
+        item = rand()+1;
         if (insert_items(item))
         {
             printf("producer <%d> made an error inserting an item", producerNumber);
