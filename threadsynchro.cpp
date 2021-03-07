@@ -22,16 +22,7 @@ int main(int argc, char *argv[])
         printf("You need 4 arguments: 1)program name \n2) how long the main thread sleeps\n3) how many producer threads\n4) how many consumer threads");
         exit(-1);
     }
-    else if (!isdigit(atoi(argv[1])) || !isdigit(atoi(argv[2])) || !isdigit(atoi(argv[3])))
-    { //make sure the arguments are ints
-        printf("ERROR: Your argument need to be positive integers");
-        exit(-1);
-    }
-    else if (atoi(argv[1]) < 1 || atoi(argv[2]) < 1 || atoi(argv[3]) < 1)
-    {
-        printf("ERROR: Your argument need to be positive integers");
-        exit(-1);
-    }
+    
     //1) Get commandline arguments argv[1], argv[2], argv[3]
     int sleepTimer = atoi(argv[1]);
     int numProducers = atoi(argv[2]);
@@ -47,23 +38,26 @@ int main(int argc, char *argv[])
     //3) Create producer thread(s)
     for (int i = 0; i < numProducers; i++)
     {
-        pthread_create(&tid_producer[i], &attr, producer, NULL);
+       
+        pthread_create(&tid_producer[i], &attr, producer,(void *) &i);
     }
 
     //4) create consumer thread(s)
-    for (int i = 0; i < numConsumers; i++)
+    for (int j = 0; j < numConsumers; j++)
     {
-        pthread_create(&tid_consumer[i], &attr, consumer, NULL);
+        pthread_create(&tid_consumer[j], &attr, consumer,(void *) &j);
     }
 
     //5) Sleep
     sleep(sleepTimer); //need to convert argv[1] to an int first
+    printf("<MAIN THREAD> GOOD BYE \n");
     //6) exit
     return 0;
 }
 
 void *producer(void *param)
 {
+    int producerNumber=*((int *) param);
     buffer_item item;
     srand(time(NULL));
     while (true)
@@ -74,19 +68,20 @@ void *producer(void *param)
         item = rand();
         if (insert_items(item))
         {
-            printf("producer made an error inserting an item");
+            printf("producer <%d> made an error inserting an item", producerNumber);
         }
         else
         {
-            printf("producer produced %d\n", item);
+            printf("producer <%d> produced %d\n", producerNumber,item);
         }
     }
 }
 
 void *consumer(void *param)
 {
-    buffer_item item;
-    
+    buffer_item item = 0; 
+    int consumerNumber=*((int *) param);
+
     while (true)
     {
         //sleep for a random period of time. *note i limit it to 5 seconds for testing purposes
@@ -94,11 +89,11 @@ void *consumer(void *param)
 
         if (remove_items(&item))
         {
-            printf("consumer failed to remove the item");
+            printf("consumer <%d> failed to remove the item", consumerNumber);
         }
         else
         {
-            printf("consumer consumed %d\n", item);
+            printf("consumer <%d> consumed %d\n", consumerNumber,item);
         }
     }
 }
