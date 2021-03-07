@@ -28,7 +28,8 @@ int main(int argc, char *argv[])
     int numProducers = atoi(argv[2]);
     int numConsumers = atoi(argv[3]);
     //2) initialize buffer
-
+    init_buffer();
+   
     //thread init
     pthread_t tid_producer[numProducers]; //the thread identifier
     pthread_t tid_consumer[numConsumers];
